@@ -95,11 +95,11 @@ plot_bar(oso, fill = "Genus")
 
 # Encontramos algunas bases de datos en zenodo:
 
-# Una es de osos negros y su microbiota en dos organos
-  # "Data From: Wild black bears harbor simple gut microbial communities with little difference between the jejunum and colon"
-
-# Y la otra es una base de datos de osos cafes a los que tambien les estudian la microbiota
+# Una de ellas es una base de datos de osos cafes a los que tambien les estudian la microbiota
   # "Correlating gut microbial membership to brown bear health metrics"
+  # Datos disponibles aqui: https://zenodo.org/record/5759055#.YbuUqvHMLVY
+  # El doi es: 10.5281/zenodo.5759055
+
 
 ###### zen4R #####
 
@@ -110,15 +110,20 @@ plot_bar(oso, fill = "Genus")
 install.packages("zen4R")
 library(zen4R)
 
-getwd()
 
+#
+
+# Esta no la vamos a usar (?) #
   # Base de osos negros:
-download_zenodo("10.5281/zenodo.4060480", path = "")
+download_zenodo("10.5281/zenodo.4060480", path = "Data/oso_cafe_zenodo/")
     # No me permite descargarla, me pone un error, pero no me lo explica
     # Suponemos que es la base porque la otra si la carga normal y es el mismo codigo (solo cambia el doi)
 
+#
+
+
   # Base de osos cafes:
-osos_cafe <- download_zenodo("10.5281/zenodo.5759055", path = "")
+osos_cafe <- download_zenodo("10.5281/zenodo.5759055", path = "Data/oso_cafe_zenodo/")
     # "path = " ", la tengo que especificar, ahorita no puedo ver mis carpetas ni en donde estoy porque se esta actualizando mi R, pero ahi se especifica en donde quieres los archivos
     # NOTA: cree una nueva carpeta llamada "oso_cafe_zenodo" para que ahi meta los archivos y no se confundan con los demas
 
@@ -130,47 +135,37 @@ osos_cafe <- download_zenodo("10.5281/zenodo.5759055", path = "")
 ##### CH2 (Visalizar y editar los datos de la base de osos cafes) #####
 
 # Hay que instalar y cargar todo esto:
-# No he visto que paquetes son los que vamos a usar y cuales no, asi que puse todos los que dice:
-
 packageVersion(qiime2R)
 
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
 BiocManager::install("microbiome")
-library(microbiome)
+#library(microbiome)
 library("BiocManager")
 ## data analysis
-install.packages("remotes")
-remotes::install_github("jbisanz/qiime2R")
-library("remotes")
 library(qiime2R) # import data
 library(phyloseq) # also the basis of data object. Data analysis and visualization
 library(vegan) # some utility tools
 library(data.table) # alternative to data.frame
 library(dplyr) # data handling
+#install.packages("tidyverse")
 library(tidyverse)
+#install.packages("DT")
 library(DT) ## interactive tables
-library(ggpubr) ## plotting 
-library(ggplot2)
-devtools::install_github("leffj/mctoolsr")
-library(mctoolsr)
-library(picante) ## faith's PD
-library(see)
-library(Rmisc)## graphing
-library(SRS)
-library(cowplot)
-library(shiny)
-library(glue)
 
+
+# Para importar el tsv con datos que nos interesan:
+#install.packages("readr")
+library(readr)
 
 # Importacion de los archivos:
 
 # NOTA: cuando mi R termine de actualizarse, pongo bien las ubicaciones de los archivos
 
 # Para leer los archivos tsv descargados:
-metadata1 <- read_tsv("brownbearmeta.tsv") 
-metadata2 <- read_tsv("metadata.tsv")
+metadata1 <- read_tsv("Data/oso_cafe_zenodo/brownbearmeta.tsv") 
+metadata2 <- read_tsv("Data/oso_cafe_zenodo/metadata.tsv")
 head(metadata2) # aqui solo se ven las primeras 10 lineas del objeto
 
 metadata<-full_join(metadata1, metadata2)
@@ -179,12 +174,12 @@ head(metadata)
   # Full_join mantiene todas las observaciones en "x" y "y"
 
 # Para leer los archivos qza:
-SVs<-read_qza("clean-brownbear-table-unassigned_Unknown_Arch-rm.qza")
+SVs<-read_qza("Data/oso_cafe_zenodo/clean-brownbear-table-unassigned_Unknown_Arch-rm.qza")
 head(SVs)
 
-taxonomy<-read_qza("brownbear-taxonomy_renamed.qza")
+taxonomy<-read_qza("Data/oso_cafe_zenodo/brownbear-taxonomy_renamed.qza")
 taxtable<-taxonomy$data %>% as_tibble() %>% separate(Taxon, sep=";", c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species")) #convert the table into a tabular split version
-tree<-read_qza("filter-rooted-brownbear-tree.qza")
+tree<-read_qza("Data/oso_cafe_zenodo/filter-rooted-brownbear-tree.qza")
 
 metadata$`Body Fat`<- cut(metadata$`Body Fat (%)`,3)
 metadata$NetBodyMass<-cut(metadata$NetBodyMasskgs,3)
@@ -192,7 +187,7 @@ metadata$`Fat Mass`<-cut(metadata$`Fat Mass (kg)`,3)
 metadata$`Lean Mass`<-cut(metadata$`Lean Mass (kg)`,3)
 
 # Crear un objeto phyloseq:
-phy_obj<-phyloseq(
+oso_cafe<-phyloseq(
   otu_table(SVs$data, taxa_are_rows = TRUE), 
   phy_tree(tree$data), 
   tax_table(as.data.frame(taxtable) %>% dplyr::select(-Confidence) %>% column_to_rownames("Feature.ID") %>% as.matrix()), #moving the taxonomy to the way phyloseq wants it
@@ -200,7 +195,31 @@ phy_obj<-phyloseq(
 
 
 #Visualizar la tabla con los datos
-datatable(tax_table(phy_obj))
-
+datatable(tax_table(oso_cafe))
+  # Esto te da una tabla interactiva.
 
 # NOTA: me parece que lo que nos interesa viene hasta la linea 155 del script CH2 porque despues de esa linea viene lo de las diversidades
+
+#Nuestro objeto phyloseq con la base de datos de zenodo se llama:
+oso_cafe
+
+#Con la funcion view me permite ver las muestras y su nivel taxonomico 
+View(tax_table(oso_cafe))
+#Con save creamos un objeto llamado oso_cafe_limpio para que asi otras puedan cargar la base de datos sin la necesidad de hacer todo lo anterior, solo con la funcionload y nombre del objeto
+save(oso_cafe, file="Data/oso_cafe_limpio")
+
+
+# Prueba de cargar las bases de datos con load:
+load("Data/oso_limpio_1_familia")
+load("Data/oso_limpio_1_genero")
+load("Data/pez_limpio_1_familia")
+load("Data/pez_limpio_1_genero")
+
+
+# Para juntar los phyloseq:
+merge_phyloseq()
+
+
+# Conisderar paquete microbiome para hacer cosas de phyloseq
+# 
+

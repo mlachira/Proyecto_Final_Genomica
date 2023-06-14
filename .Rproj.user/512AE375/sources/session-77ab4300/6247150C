@@ -1,0 +1,28 @@
+{
+    "id": "6247150C",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1686782378109.0,
+    "source_on_save": false,
+    "relative_order": 4,
+    "properties": {
+        "id": "f2f4ff980efe4e8a978484450352fcc6",
+        "name": "oso_cafe",
+        "title": "oso_cafe",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 2330000287680,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1686782378109,
+    "read_only": false,
+    "read_only_alternatives": []
+}

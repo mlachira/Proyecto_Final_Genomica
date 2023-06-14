@@ -110,6 +110,8 @@ plot_bar(oso, fill = "Genus")
 install.packages("zen4R")
 library(zen4R)
 
+getwd()
+
   # Base de osos negros:
 download_zenodo("10.5281/zenodo.4060480", path = "")
     # No me permite descargarla, me pone un error, pero no me lo explica

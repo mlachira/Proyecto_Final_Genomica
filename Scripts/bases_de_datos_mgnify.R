@@ -1,9 +1,9 @@
 #Melisa Lachira
 #Diana Karina Rangel
-#Maria del Carmen Ramírez
+#Maria del Carmen Ramirez
 
 #Cargamos la libreria ya previamente descargada "phyloseq"
-#Si no se tiene descargado "phyloseq" se puede descargar con el siguiente código
+#Si no se tiene descargado "phyloseq" se puede descargar con el siguiente codigo
 #if (!require("BiocManager", tranquilamente = VERDADERO))
 #install.packages("BiocManager")
 #BiocManager::install("phyloseq")
@@ -13,15 +13,15 @@ library(phyloseq)
 #Descarga de la libreria de "MGnifyR"
 install.packages("MGnifyR")
 devtools::install_github("beadyallen/MGnifyR")
-#MGnifyR sirve para buscar y recuperar datos del recurso Metagenómica de EBI.
+#MGnifyR sirve para buscar y recuperar datos del recurso Metagenomica de EBI.
 #Cargamos la libreria "MGnifyR"
 library(MGnifyR)
 
 
 ### DATA ###
 
-#En MGnify se encontro una base de datos sobre "Microbioma intestinal de osos en hibernación"
-#Las muestras se recolectaron del colón 17 osos negros (Ursus americanus) en hibernación en Minessota, EUA.
+#En MGnify se encontro una base de datos sobre "Microbioma intestinal de osos en hibernacion"
+#Las muestras se recolectaron del colon 17 osos negros (Ursus americanus) en hibernacion en Minessota, EUA.
 #Se identificaron las bacterias presentes en la microbioma utilizando 16S aplicon data
 #https://www.ebi.ac.uk/metagenomics/studies/MGYS00003951#overview
 #Study MGYS00003951
@@ -35,7 +35,7 @@ oso <- mgnify_get_analyses_phyloseq(mgclnt, meta_dataframe$analysis_accession, u
 #Borramos de la base de datos aquellos que en Familia tengan NA
 oso_limpio_F_1 <- subset_taxa(oso, !(Family %in% c(NA)))
 oso_limpio_F_1
-#Con la función view me permite ver las muestras y si nivel taxonomico 
+#Con la funcion view me permite ver las muestras y si nivel taxonomico 
 View(tax_table(oso_limpio_F_1))
 #Con save creamos un objeto llamado oso_limpio_familia para que así otras puedan cargar la base de datos sin la necesidad de hacer todo lo anterior, solo con la función load y nombre del objeto
 save(oso_limpio_F_1, file="Data/oso_limpio_1_familia")
@@ -43,13 +43,13 @@ save(oso_limpio_F_1, file="Data/oso_limpio_1_familia")
 #Borramos de la base de datos aquellos que en Genero tengan NA
 oso_limpio_G_1 <- subset_taxa(oso, !(Genus %in% c(NA)))
 oso_limpio_G_1
-#Con la función view me permite ver las muestras y si nivel taxonomico 
+#Con la funcion view me permite ver las muestras y si nivel taxonomico 
 View(tax_table(oso_limpio_G_1))
 #Con save creamos un objeto llamado oso_limpio_familia para que así otras puedan cargar la base de datos sin la necesidad de hacer todo lo anterior, solo con la función load y nombre del objeto
 save(oso_limpio_G_1, file="Data/oso_limpio_1_genero")
 
 #En MGnify se encontro una base de datos de "Song Colorado freshwater fish"
-#Las muestras son de baba y tripa de diferentes especies de peces de agua dulce del río Colorado, EUA.
+#Las muestras son de baba y tripa de diferentes especies de peces de agua dulce del rio Colorado, EUA.
 #https://www.ebi.ac.uk/metagenomics/studies/MGYS00003748#overview
 #Study MGYS00003748
 mgclnt <- mgnify_client(usecache = T, cache_dir = '/tmp/MGnify_cache')

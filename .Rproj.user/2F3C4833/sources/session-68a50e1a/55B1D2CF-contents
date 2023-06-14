@@ -1,0 +1,227 @@
+library(dada2)
+#donde estan mis archivos de secuenciación
+path <- "01_Raw_Data/MiSeq_SOP/" # CHANGE ME to the directory containing the fastq files after unzipping.
+#quienes estan en esta dirección
+list.files(path)
+
+#R1= froward y R2=Reverse
+# Forward and reverse fastq filenames have format: SAMPLENAME_R1_001.fastq and SAMPLENAME_R2_001.fastq
+fnFs <- sort(list.files(path, pattern="_R1_001.fastq", full.names = TRUE))
+fnRs <- sort(list.files(path, pattern="_R2_001.fastq", full.names = TRUE))
+# Extract sample names, assuming filenames have format: SAMPLENAME_XXX.fastq
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`, 1)
+#Nos da ya solo los nombres
+
+#Armar un pdf pero ya vienen en la carpeta de plots
+pdf("03_Plots/QualityForwardPHRED.pdf",width = 21,height = 18)
+plotQualityProfile(fnFs[1:10])
+dev.off()
+
+pdf("03_Plots/QualityReversePHRED.pdf",width = 21,height = 18)
+plotQualityProfile(fnRs[1:10])
+dev.off()
+
+#creamos una carpeta de filtrados con los mismo nombres
+# Place filtered files in filtered/ subdirectory
+filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+
+#cortamos 240 el forward y reverse 160 y me quedo con secuencias fastq pero rectoradas 
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(240,160),
+                     maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE,
+                     compress=TRUE, multithread=TRUE) # On Windows set multithread=FALSE
+#Cunatas lecturas me quedaron con los que se filtraron 
+head(out)
+
+#Denoising
+
+errF <- learnErrors(filtFs, multithread=TRUE)
+save(errF,file="04_Processed_Data/errF.RData")
+errR <- learnErrors(filtRs, multithread=TRUE)
+save(errF,file="04_Processed_Data/errR.RData")
+plotErrors(errF, nominalQ=TRUE)
+pdf("03_Plots/Errors.pdf")
+plotErrors(errF, nominalQ=TRUE)
+dev.off()
+#Cualquier objeto que viva en R lo puedo guardar, en este caso errD, con load("04_Processed_Data/errD.RDataF") lo podemos guardar sin que este se cargue, Objetos que son pesados y guardarlos sin tener que correrlos
+load("04_Processed_Data/errF.RData")
+
+dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
+save(dadaFs,file = "04_Processed_Data/dadaFs.RData")
+dadaRs <- dada(filtRs, err=errR, multithread=TRUE)
+save(dadaRs,file = "04_Processed_Data/dadaRs.RData")
+load("04_Processed_Data/dadaFs.RData")
+load("04_Processed_Data/dadaRs.RData")
+
+mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
+save(mergers,file = "04_Processed_Data/mergers.RData")
+load("04_Processed_Data/mergers.RData")
+
+load("04_Processed_Data/mergers.RData")
+# Inspect the merger data.frame from the first sample
+head(mergers[[1]])
+
+seqtab <- makeSequenceTable(mergers)
+dim(seqtab)
+table(nchar(getSequences(seqtab)))
+seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=TRUE, verbose=TRUE)
+dim(seqtab.nochim)
+
+
+getN <- function(x) sum(getUniques(x))
+track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, getN), rowSums(seqtab.nochim))
+# If processing a single sample, remove the sapply calls: e.g. replace sapply(dadaFs, getN) with getN(dadaFs)
+colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
+rownames(track) <- sample.names
+head(track)
+
+#Descargar base datos fasta y se hace la asignación
+taxa <- assignTaxonomy(seqtab.nochim, "01_Raw_Data/MiSeq_SOP/silva_nr99_v138.1_train_set.fa.gz", multithread=TRUE)
+
+taxa <- addSpecies(taxa, "01_Raw_Data/MiSeq_SOP/silva_species_assignment_v138.1.fa.gz")
+save(taxa,file="04_Processed_Data/taxa.RData")
+
+load("04_Processed_Data/taxa.RData")
+taxa.print <- taxa # Removing sequence rownames for display only
+rownames(taxa.print) <- NULL
+head(taxa.print)
+
+
+unqs.mock <- seqtab.nochim["Mock_F_filt.fastq.gz",]
+unqs.mock <- sort(unqs.mock[unqs.mock>0], decreasing=TRUE) # Drop ASVs absent in the Mock
+cat("DADA2 inferred", length(unqs.mock), "sample sequences present in the Mock community.\n")
+
+
+samples.out <- rownames(seqtab.nochim)
+subject <- sapply(strsplit(samples.out, "D"), `[`, 1)
+gender <- substr(subject,1,1)
+subject <- substr(subject,2,999)
+day <- as.integer(sapply(strsplit(samples.out, "D"), `[`, 2))
+samdf <- data.frame(Subject=subject, Gender=gender, Day=day)
+samdf$When <- "Early"
+samdf$When[samdf$Day>100] <- "Late"
+rownames(samdf) <- samples.out
+
+
+library(phyloseq)
+
+ps <- phyloseq(otu_table(seqtab.nochim, taxa_are_rows=FALSE), 
+               sample_data(samdf), 
+               tax_table(taxa))
+ps <- prune_samples(sample_names(ps) != "Mock", ps) # Remove mock sample
+
+dna <- Biostrings::DNAStringSet(taxa_names(ps))
+names(dna) <- taxa_names(ps)
+ps <- merge_phyloseq(ps, dna)
+taxa_names(ps) <- paste0("ASV", seq(ntaxa(ps)))
+ps
+
+plot_richness(ps, x="Day", measures=c("Shannon", "Simpson"), color="When")
+
+#Buscar en internet DADA2 pipeline 
+#Cuando trabajamos con 16S normalmente es en base de datos de bacteria (se llama silva)
+#Si lo queremos hace con hongos es con los ITS
+#Libreria DECIPHER que utiliza un algortimo para llegar a especie
+#Boonus convertir un objeto a phyoseq
+#OUT table cuantas clasificaciones encontro, cuantas muestras tiene, cuantas variables, tax table las opciones de que identifico y hasta que nivel y la refseq
+load("ps.RData")
+ps
+#Me aparece a la izquierda las muestras y a la derecha las abundacias de las avs
+otu_table(ps)
+#Es como los metadatos y nos pone la muestra a que sujeto corresponde, día en el que midieron y cuando, la establecemos cuando hacemos el experimento, comparar como se ve la composición de bacterias en estas dos condiciones (early y later)
+#Tener cuidado con las variables, no todos tiene when, este conjunto de datos si lo tiene
+sample_data(ps)
+tax_table(ps)
+refseq(ps)
+
+#Opciones para poder calcular
+#Objetos que ya vienen cargados en phyloseq
+data("enterotype")
+#Esofago parece vacía
+esofago<-data("esophagus")
+#Má completa
+data("GlobalPatterns")
+#Nos dice que es un elemnto phyloseq, 26 muestras, 7 variables y tiene un arbol
+GlobalPatterns
+#No afuerzas todos los data tiene un arbol
+phy_tree(GlobalPatterns)
+##Tiene identificado de la muestra, tipo de muestra, descripción, de donde la tomaron, etc
+sample_data(GlobalPatterns)
+tax_table(GlobalPatterns)
+refseq(GlobalPatterns)
+plot_richness(GlobalPatterns, x="SampleType",
+              measures = c("shannon", "simpson", color="Primer"))
+#Lo separa por primer pero lo puedo separa por las variables que quiera
+#4 muestras de heces con la diversidad alfa y el indice de Shannon, que sea muy grande no indica que la diversidad sea más grande, el color nos indica el primer que se utilizo para hacer la amplificación 
+#La diversidad se puede medir con diferentes indices c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson", "Fisher")
+#Cada punto es una comunidad, una especie en la derecha no es tan dominante como otras especies (ocean)
+#Tutorial https://vaulot.github.io/tutorials/Phyloseq_tutorial.html
+
+
+#Continuación de phyloseq
+#Link en classroom
+library("phyloseq")
+library("ggplot2")
+data(GlobalPatterns)
+# prune OTUs that are not present in at least one sample
+#Nos da las taxa y samples, las sample variables, taxa y taxonomic ranks, tips y nodos internos
+GP <- prune_taxa(taxa_sums(GlobalPatterns) > 0, GlobalPatterns)
+GP
+# Define a human-associated versus non-human categorical variable:
+human <- get_variable(GP, "SampleType") %in% c("Feces", "Mock", "Skin", "Tongue")
+human
+# Add new human variable to sample data:
+sample_data(GP)$human <- factor(human)
+alpha_meas = c("Observed", "Chao1", "ACE", "Shannon", "Simpson", "InvSimpson")
+(p <- plot_richness(GP, "human", "SampleType", measures=alpha_meas))
+p + geom_boxplot(data=p$data, aes(x=human, y=value, color=NULL), alpha=0.1)
+gpheces<-subset_samples(GlobalPatterns, SampleType== "heces")
+#quitar una clase 
+subset_taxa(gpheces, !(Class%in))
+#Construir la normalización 
+#Falta lo del otro link 
+#el tamaño de los circulos corresponden a las abundancias
+#No alcance a terminar porque no me abria mi R studio :(
+
+
+#redes de concurrencia, las conexiones indican si los filum aprecen en las muestras las mismas veces
+#Mothur nos permite hacer lo mismo pero a nivel de otus 
+#Seguir uno de los tutoriales y hacer un analisis
+library(dplyr)
+library(phyloseq)
+#Iba a hacer lo de este link pero me arroja que se ocupa una licencia (checar luego)
+installed.packages("microViz")
+library(microViz)
+
+#
+library(dplyr)
+library(ggplot2)
+#Con la función de data cargue la base de datos (objeto phyloseq) que viene en la libreria previamnete descargada de phyloseq
+data("enterotype")
+#Sample names como su nombre nos indica nos va a dar los nombres de las muetras (sample_names(objeto_phyloseq))
+sample_names(enterotype)
+#Rank names me da los niveles de identificación 
+#Solo me arroja "Genus"
+rank_names(enterotype)
+#sample_variables, es para determinar las variables de las muestras en 
+#Me de que tenero enterotype, project, sample_id, clinicalsatus, nationality, seqtech, gender, age y otro ID (no se porque hay otro ID pero si difieren de los nombres entonces no se si más bien sea un error en la base??? Si es un error en la base el sample id es mismo)
+sample_variables(enterotype)[2]
+#Para verficar que los dos sample ID son lo mismo
+sample_data(enterotype)
+#Lo separo para que del objeto enterotype solo me de aquellos que el genero sea igual a "F"
+x <- subset_samples(enterotype, Gender =="F")
+#Normal me ponia qye tenía 553 taxa y 280 samples, 9 variables y 1 taxonomic ranks
+#En el objeto x ahora me pone que de las 553 taxa tengo 17 muestras, 9 variables de muestras y 1 taxonomic ranks
+#Normalizar
+total = median(sample_sums(enterotype))
+standf = function(x, t=total) round(t * (x / sum(x)))
+enterotype = transform_sample_counts(enterotype, standf)
+#Gráficas
+plot_bar(enterotype, fill = "Gender")
+#Gráfica de barra en el que me separa por género, el problema es que varios tienen NA por lo que mucho de lo que se ve en la gráfica esta en negro
+#Ademas de que genero creo que no fue la mejor opción para separar jajaj
+#Ya no me dio tiempo de hacer esta :(
+lot_bar(carbom, fill = "Division") + 
+    geom_bar(aes(color=Division, fill=Division), stat="identity", position="stack")

@@ -246,3 +246,15 @@ data_genero
 # Conisderar paquete microbiome para hacer cosas de phyloseq
 # 
 
+#Probando cosas
+familia_rel_abund = phyloseq::transform_sample_counts(data_familia, function(x){x / sum(x)})
+phyloseq::otu_table(data_familia)[1:5 , 1:5]
+phyloseq::otu_table(familia_rel_abund)[1:5, 1:5]
+phyloseq::plot_bar(familia_rel_abund, fill = "Family") +
+  geom_bar(aes(color = Phylum, fill = Phylum), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~ Status, scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+

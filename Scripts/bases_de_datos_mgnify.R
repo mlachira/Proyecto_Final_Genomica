@@ -209,16 +209,39 @@ View(tax_table(oso_cafe))
 save(oso_cafe, file="Data/oso_cafe_limpio")
 
 
+oso_limpio_F_2 <- subset_taxa(oso_cafe, !(Family %in% c(NA)))
+oso_limpio_F_2
+View(tax_table(oso_limpio_F_2))
+#Con save creamos un objeto llamado oso_limpio_familia para que así otras puedan cargar la base de datos sin la necesidad de hacer todo lo anterior, solo con la función load y nombre del objeto
+save(oso_limpio_F_2, file="Data/oso_limpio_2_familia")
+
+#Borramos de la base de datos aquellos que en Genero tengan NA
+oso_limpio_G_2 <- subset_taxa(oso_cafe, !(Genus %in% c(NA)))
+oso_limpio_G_2
+#Con la función view me permite ver las muestras y si nivel taxonomico 
+View(tax_table(oso_limpio_G_2))
+#Con save creamos un objeto llamado oso_limpio_familia para que así otras puedan cargar la base de datos sin la necesidad de hacer todo lo anterior, solo con la función load y nombre del objeto
+save(oso_limpio_G_2, file="Data/oso_limpio_2_genero")
+
+
+
 # Prueba de cargar las bases de datos con load:
 load("Data/oso_limpio_1_familia")
 load("Data/oso_limpio_1_genero")
 load("Data/pez_limpio_1_familia")
 load("Data/pez_limpio_1_genero")
+load("Data/oso_cafe_limpio")
+load("Data/oso_limpio_2_familia")
+load("Data/oso_limpio_2_genero")
 
 
 # Para juntar los phyloseq:
-merge_phyloseq()
-
+#Se juntaron los phyloseq de familia
+data_familia<- merge_phyloseq(oso_limpio_F_1, pez_limpio_F_1, oso_limpio_F_2)
+data_familia
+#Se juntaron los phyloseq de genero
+data_genero<- merge_phyloseq(oso_limpio_G_1, pez_limpio_G_1, oso_limpio_G_2)
+data_genero
 
 # Conisderar paquete microbiome para hacer cosas de phyloseq
 # 

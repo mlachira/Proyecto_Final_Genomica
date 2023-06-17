@@ -376,3 +376,23 @@ pclass
 View(otu_table(data_familia_corto))
 View(phy_tree((data_familia_corto)))
 View(sample_data(data_familia_corto))
+
+
+
+# Creo que con esto se pueden ver los mas abundantes (de nuevo):
+
+library(ggplot2)
+library(MicrobiotaProcess)
+
+# En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
+osofamilia <- get_taxadf(obj=oso_limpio_F_1, taxlevel=3, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
+plot_osofamilia <- ggbartax(obj=osofamilia) +
+  xlab(NULL) +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_osofamilia
+

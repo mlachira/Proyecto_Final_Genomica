@@ -226,35 +226,110 @@ save(oso_limpio_G_2, file="Data/oso_limpio_2_genero")
 
 
 # Prueba de cargar las bases de datos con load:
+getwd()
+setwd("C:/Users/Luis Diego/Documents/Proyecto_Final_Genomica")
 load("Data/oso_limpio_1_familia")
+oso_limpio_F_1
+#Encontre esta función para hacer más chiquito nuestro objeto phyloseq
+#El objeot phyloseq tenia 85 samples y cambiamos a que escogiera aleatoriamente 10 samples
+sample_oso <- function(oso_limpio_F_1, FUN = sample,...){
+  ids <- sample_names(oso_limpio_F_1)
+  sampled_ids <- FUN(ids, ...)
+  oso_limpio_F_1 <- prune_samples(sampled_ids, oso_limpio_F_1)
+  return(oso_limpio_F_1)
+}
+
+oso_corto_F_1<- sample_oso(oso_limpio_F_1, size=10)
+oso_corto_F_1
+save(oso_corto_F_1, file = "Data/oso_corto_F_1")
+
 load("Data/oso_limpio_1_genero")
+oso_limpio_G_1
+#El objeot phyloseq tenia 85 samples y cambiamos a que escogiera aleatoriamente 10 samples
+sample_osoo_1 <- function(oso_limpio_G_1, FUN = sample,...){
+  ids <- sample_names(oso_limpio_G_1)
+  sampled_ids <- FUN(ids, ...)
+  oso_limpio_G_1 <- prune_samples(sampled_ids, oso_limpio_G_1)
+  return(oso_limpio_G_1)
+}
+
+oso_corto_G_1<- sample_osoo_1(oso_limpio_G_1, size=10)
+oso_corto_G_1
+save(oso_corto_G_1, file = "Data/oso_corto_G_1")
+
 load("Data/pez_limpio_1_familia")
+#Paso de tener 261 samples a 
+pez_limpio_F_1
+sample_pezz <- function(pez_limpio_F_1, FUN = sample,...){
+  ids <- sample_names(pez_limpio_F_1)
+  sampled_ids <- FUN(ids, ...)
+  pez_limpio_F_1 <- prune_samples(sampled_ids, pez_limpio_F_1)
+  return(pez_limpio_F_1)
+}
+
+pez_corto_F_1<- sample_pezz(pez_limpio_F_1, size=10)
+pez_corto_F_1
+save(pez_corto_F_1, file = "Data/pez_corto_F1")
+
 load("Data/pez_limpio_1_genero")
+#Paso de tener 261 samples a 10 samples
+pez_limpio_G_1
+sample_pezz_1 <- function(pez_limpio_G_1, FUN = sample,...){
+  ids <- sample_names(pez_limpio_G_1)
+  sampled_ids <- FUN(ids, ...)
+  pez_limpio_G_1 <- prune_samples(sampled_ids, pez_limpio_G_1)
+  return(pez_limpio_G_1)
+}
+
+pez_corto_G_1<- sample_pezz_1(pez_limpio_G_1, size=10)
+pez_corto_G_1
+save(pez_corto_G_1, file = "Data/pez_corto_1")
+
 load("Data/oso_cafe_limpio")
 load("Data/oso_limpio_2_familia")
-load("Data/oso_limpio_2_genero")
+#Paso de tener 66 samples a 10
+oso_limpio_F_2
+sample_oso_2 <- function(oso_limpio_F_2, FUN = sample,...){
+  ids <- sample_names(oso_limpio_F_2)
+  sampled_ids <- FUN(ids, ...)
+  oso_limpio_F_2 <- prune_samples(sampled_ids, oso_limpio_F_2)
+  return(oso_limpio_F_2)
+}
 
+oso_corto_F_2<- sample_oso_2(oso_limpio_F_2, size=10)
+oso_corto_F_2
+save(oso_corto_F_2, file = "Data/oso_corto_F_2")
+
+load("Data/oso_limpio_2_genero")
+#Paso de tener 66 samples a 10 
+oso_limpio_G_2
+sample_osoo_2 <- function(oso_limpio_G_2, FUN = sample,...){
+  ids <- sample_names(oso_limpio_G_2)
+  sampled_ids <- FUN(ids, ...)
+  oso_limpio_G_2 <- prune_samples(sampled_ids, oso_limpio_G_2)
+  return(oso_limpio_G_2)
+}
+
+oso_corto_G_2<- sample_osoo_2(oso_limpio_G_2, size=10)
+save(oso_corto_G_2,file = "Data/oso_corto_G_2")
+
+load("Data/oso_corto_F_1")
+load("Data/oso_corto_G_1")
+load("Data/oso_corto_F_2")
+load("Data/oso_corto_G_2")
+load("Data/pez_corto_F1")
+load("Data/pez_corto_1")
 
 # Para juntar los phyloseq:
 #Se juntaron los phyloseq de familia
-data_familia<- merge_phyloseq(oso_limpio_F_1, pez_limpio_F_1, oso_limpio_F_2)
-data_familia
+data_familia_corto<- merge_phyloseq(oso_corto_F_1, pez_corto_F_1, oso_corto_F_2)
+data_familia_corto
 #Se juntaron los phyloseq de genero
-data_genero<- merge_phyloseq(oso_limpio_G_1, pez_limpio_G_1, oso_limpio_G_2)
-data_genero
+data_genero_corto<- merge_phyloseq(oso_corto_G_1, pez_corto_G_1, oso_corto_G_2)
+data_genero_corto
 
 # Conisderar paquete microbiome para hacer cosas de phyloseq
 # 
 
-#Probando cosas
-familia_rel_abund = phyloseq::transform_sample_counts(data_familia, function(x){x / sum(x)})
-phyloseq::otu_table(data_familia)[1:5 , 1:5]
-phyloseq::otu_table(familia_rel_abund)[1:5, 1:5]
-phyloseq::plot_bar(familia_rel_abund, fill = "Family") +
-  geom_bar(aes(color = Phylum, fill = Phylum), stat = "identity", position = "stack") +
-  labs(x = "", y = "Relative Abundance\n") +
-  facet_wrap(~ Status, scales = "free") +
-  theme(panel.background = element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())
+plot_bar(data_familia_corto,fill= "Family")
 

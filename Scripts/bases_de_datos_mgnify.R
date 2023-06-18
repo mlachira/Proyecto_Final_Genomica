@@ -414,10 +414,43 @@ sample_data(oso_limpio_G_2)$nuevacol<-"DATA_OSO2"
 sample_data(pez_limpio_F_1)$nuevacol<-"DATA_PEZ1"
 sample_data(pez_limpio_G_1)$nuevacol<-"DATA_PEZ2"
 
-intento1<- merge_phyloseq(oso_limpio_F_1, oso_limpio_F_2, pez_limpio_F_1)
+intento1<-merge_phyloseq(oso_limpio_F_1, pez_limpio_F_1)
+sample_data(intento1)
+x1<- tax_glom(intento1, taxrank="Family", NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
+x1
+sample_data(x1)
+
+pseq.rel <- microbiome::transform(x1, "compositional")
+disease_states <- unique(as.character(meta(pseq.rel)$nuevacol))
+print(disease_states)
+list_core <- c() # an empty object to store information
+
+for (n in disease_states){ # for each variable n in DiseaseState
+  #print(paste0("Identifying Core Taxa for ", n))
+  
+  ps.sub <- subset_samples(pseq.rel, nuevacol == n) # Choose sample from DiseaseState by n
+  
+  core_m <- core_members(ps.sub, # ps.sub is phyloseq selected with only samples from g 
+                         detection = 0.001, # 0.001 in atleast 90% samples 
+                         prevalence = 0.00,
+                         include.lowest = FALSE)
+  print(paste0("No. of core taxa in ", n, " : ", length(core_m))) # print core taxa identified in each DiseaseState.
+  list_core[[n]] <- core_m # add to a list core taxa for each group.
+  #print(list_core)
+}
+print(list_core)
+library(eulerr)
+mycols <- c(DATA_OSO1="#d6e2e9", DATA_PEZ1="#fcf5c7") 
+plot(venn(list_core),
+     fills = mycols)
+
+
+
+intento1<- merge_phyloseq(oso_limpio_F_1, pez_limpio_F_1)
 library(microbiome)
 View(sample_data(intento1))
 View(tax_table(intento1))
+sample_data(intento1)
 
 otu_table(intento1)
 otu_table(oso_limpio_F_1)

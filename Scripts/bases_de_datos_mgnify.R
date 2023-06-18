@@ -109,14 +109,14 @@ plot_bar(oso, fill = "Genus")
 
 # Se descarga zen4R y se carga:
 #install.packages("zen4R")
-library(zen4R)
+#library(zen4R)
 
 
 #
 
 # Esta no la vamos a usar (?) #
   # Base de osos negros:
-download_zenodo("10.5281/zenodo.4060480", path = "Data/oso_cafe_zenodo/")
+#download_zenodo("10.5281/zenodo.4060480", path = "Data/oso_cafe_zenodo/")
     # No me permite descargarla, me pone un error, pero no me lo explica
     # Suponemos que es la base porque la otra si la carga normal y es el mismo codigo (solo cambia el doi)
 
@@ -124,7 +124,7 @@ download_zenodo("10.5281/zenodo.4060480", path = "Data/oso_cafe_zenodo/")
 
 
   # Base de osos cafes:
-osos_cafe <- download_zenodo("10.5281/zenodo.5759055", path = "Data/oso_cafe_zenodo/")
+#osos_cafe <- download_zenodo("10.5281/zenodo.5759055", path = "Data/oso_cafe_zenodo/")
     # "path = " ", la tengo que especificar, ahorita no puedo ver mis carpetas ni en donde estoy porque se esta actualizando mi R, pero ahi se especifica en donde quieres los archivos
     # NOTA: cree una nueva carpeta llamada "oso_cafe_zenodo" para que ahi meta los archivos y no se confundan con los demas
 
@@ -136,13 +136,13 @@ osos_cafe <- download_zenodo("10.5281/zenodo.5759055", path = "Data/oso_cafe_zen
 ##### CH2 (Visalizar y editar los datos de la base de osos cafes) #####
 
 # Hay que instalar y cargar todo esto:
-packageVersion(qiime2R)
+#packageVersion(qiime2R)
 
-if (!requireNamespace("BiocManager", quietly = TRUE))
+#if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
-BiocManager::install("microbiome")
-#library(microbiome)
+#BiocManager::install("microbiome")
+library(microbiome)
 library("BiocManager")
 ## data analysis
 library(qiime2R) # import data
@@ -165,194 +165,194 @@ library(readr)
 # NOTA: cuando mi R termine de actualizarse, pongo bien las ubicaciones de los archivos
 
 # Para leer los archivos tsv descargados:
-metadata1 <- read_tsv("Data/oso_cafe_zenodo/brownbearmeta.tsv") 
-metadata2 <- read_tsv("Data/oso_cafe_zenodo/metadata.tsv")
-head(metadata2) # aqui solo se ven las primeras 10 lineas del objeto
+#metadata1 <- read_tsv("Data/oso_cafe_zenodo/brownbearmeta.tsv") 
+#metadata2 <- read_tsv("Data/oso_cafe_zenodo/metadata.tsv")
+#head(metadata2) # aqui solo se ven las primeras 10 lineas del objeto
 
-metadata<-full_join(metadata1, metadata2)
-head(metadata)
+#metadata<-full_join(metadata1, metadata2)
+#head(metadata)
   # full_join: agregan columnas de "y" a "x", haciendo coincidir las observaciones en funcion de las claves.
   # Full_join mantiene todas las observaciones en "x" y "y"
 
 # Para leer los archivos qza:
-SVs<-read_qza("Data/oso_cafe_zenodo/clean-brownbear-table-unassigned_Unknown_Arch-rm.qza")
-head(SVs)
+#SVs<-read_qza("Data/oso_cafe_zenodo/clean-brownbear-table-unassigned_Unknown_Arch-rm.qza")
+#head(SVs)
 
-taxonomy<-read_qza("Data/oso_cafe_zenodo/brownbear-taxonomy_renamed.qza")
-taxtable<-taxonomy$data %>% as_tibble() %>% separate(Taxon, sep=";", c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species")) #convert the table into a tabular split version
-tree<-read_qza("Data/oso_cafe_zenodo/filter-rooted-brownbear-tree.qza")
+#taxonomy<-read_qza("Data/oso_cafe_zenodo/brownbear-taxonomy_renamed.qza")
+#taxtable<-taxonomy$data %>% as_tibble() %>% separate(Taxon, sep=";", c("Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species")) #convert the table into a tabular split version
+#tree<-read_qza("Data/oso_cafe_zenodo/filter-rooted-brownbear-tree.qza")
 
-metadata$`Body Fat`<- cut(metadata$`Body Fat (%)`,3)
-metadata$NetBodyMass<-cut(metadata$NetBodyMasskgs,3)
-metadata$`Fat Mass`<-cut(metadata$`Fat Mass (kg)`,3)
-metadata$`Lean Mass`<-cut(metadata$`Lean Mass (kg)`,3)
+#metadata$`Body Fat`<- cut(metadata$`Body Fat (%)`,3)
+#metadata$NetBodyMass<-cut(metadata$NetBodyMasskgs,3)
+#metadata$`Fat Mass`<-cut(metadata$`Fat Mass (kg)`,3)
+#metadata$`Lean Mass`<-cut(metadata$`Lean Mass (kg)`,3)
 
 # Crear un objeto phyloseq:
-oso_cafe<-phyloseq(
-  otu_table(SVs$data, taxa_are_rows = TRUE), 
-  phy_tree(tree$data), 
-  tax_table(as.data.frame(taxtable) %>% dplyr::select(-Confidence) %>% column_to_rownames("Feature.ID") %>% as.matrix()), #moving the taxonomy to the way phyloseq wants it
-  sample_data(metadata %>% as.data.frame() %>% column_to_rownames("SampleID")))
+#oso_cafe<-phyloseq(
+ # otu_table(SVs$data, taxa_are_rows = TRUE), 
+  #phy_tree(tree$data), 
+  #tax_table(as.data.frame(taxtable) %>% dplyr::select(-Confidence) %>% column_to_rownames("Feature.ID") %>% as.matrix()), #moving the taxonomy to the way phyloseq wants it
+  #sample_data(metadata %>% as.data.frame() %>% column_to_rownames("SampleID")))
 
 
 #Visualizar la tabla con los datos
-datatable(tax_table(oso_cafe))
+#datatable(tax_table(oso_cafe))
   # Esto te da una tabla interactiva.
 
 # NOTA: me parece que lo que nos interesa viene hasta la linea 155 del script CH2 porque despues de esa linea viene lo de las diversidades
 
 #Nuestro objeto phyloseq con la base de datos de zenodo se llama:
-oso_cafe
+#oso_cafe
 
 #Con la funcion view me permite ver las muestras y su nivel taxonomico 
-View(tax_table(oso_cafe))
+#View(tax_table(oso_cafe))
 #Con save creamos un objeto llamado oso_cafe_limpio para que asi otras puedan cargar la base de datos sin la necesidad de hacer todo lo anterior, solo con la funcionload y nombre del objeto
-save(oso_cafe, file="Data/oso_cafe_limpio")
+#save(oso_cafe, file="Data/oso_cafe_limpio")
 
 
-oso_limpio_F_2 <- subset_taxa(oso_cafe, !(Family %in% c(NA)))
-oso_limpio_F_2
-View(tax_table(oso_limpio_F_2))
+#oso_limpio_F_2 <- subset_taxa(oso_cafe, !(Family %in% c(NA)))
+#oso_limpio_F_2
+#View(tax_table(oso_limpio_F_2))
 #Con save creamos un objeto llamado oso_limpio_familia para que así otras puedan cargar la base de datos sin la necesidad de hacer todo lo anterior, solo con la función load y nombre del objeto
-save(oso_limpio_F_2, file="Data/oso_limpio_2_familia")
+#save(oso_limpio_F_2, file="Data/oso_limpio_2_familia")
 
 #Borramos de la base de datos aquellos que en Genero tengan NA
-oso_limpio_G_2 <- subset_taxa(oso_cafe, !(Genus %in% c(NA)))
-oso_limpio_G_2
+#oso_limpio_G_2 <- subset_taxa(oso_cafe, !(Genus %in% c(NA)))
+#oso_limpio_G_2
 #Con la función view me permite ver las muestras y si nivel taxonomico 
-View(tax_table(oso_limpio_G_2))
+#View(tax_table(oso_limpio_G_2))
 #Con save creamos un objeto llamado oso_limpio_familia para que así otras puedan cargar la base de datos sin la necesidad de hacer todo lo anterior, solo con la función load y nombre del objeto
-save(oso_limpio_G_2, file="Data/oso_limpio_2_genero")
+#save(oso_limpio_G_2, file="Data/oso_limpio_2_genero")
 
 
 
 # Prueba de cargar las bases de datos con load:
-getwd()
-setwd("C:/Users/Luis Diego/Documents/Proyecto_Final_Genomica")
-load("Data/oso_limpio_1_familia")
-oso_limpio_F_1
+#getwd()
+#setwd("C:/Users/Luis Diego/Documents/Proyecto_Final_Genomica")
+#load("Data/oso_limpio_1_familia")
+#oso_limpio_F_1
 
 #Encontre esta función para hacer más chiquito nuestro objeto phyloseq
 #El objeot phyloseq tenia 85 samples y cambiamos a que escogiera aleatoriamente 10 samples
 
 # Para osos negros (familia): 
-sample_oso <- function(oso_limpio_F_1, FUN = sample,...){
-  ids <- sample_names(oso_limpio_F_1)
-  sampled_ids <- FUN(ids, ...)
-  oso_limpio_F_1 <- prune_samples(sampled_ids, oso_limpio_F_1)
-  return(oso_limpio_F_1)
-}
+#sample_oso <- function(oso_limpio_F_1, FUN = sample,...){
+ # ids <- sample_names(oso_limpio_F_1)
+ # sampled_ids <- FUN(ids, ...)
+#  oso_limpio_F_1 <- prune_samples(sampled_ids, oso_limpio_F_1)
+ # return(oso_limpio_F_1)
+#}
 
-oso_corto_F_1<- sample_oso(oso_limpio_F_1, size=10)
-oso_corto_F_1
-save(oso_corto_F_1, file = "Data/oso_corto_F_1")
+#oso_corto_F_1<- sample_oso(oso_limpio_F_1, size=10)
+#oso_corto_F_1
+#save(oso_corto_F_1, file = "Data/oso_corto_F_1")
 
 
 # Para osos negros (genero): 
 
-load("Data/oso_limpio_1_genero")
-oso_limpio_G_1
+#load("Data/oso_limpio_1_genero")
+#oso_limpio_G_1
 #El objeot phyloseq tenia 85 samples y cambiamos a que escogiera aleatoriamente 10 samples
-sample_osoo_1 <- function(oso_limpio_G_1, FUN = sample,...){
-  ids <- sample_names(oso_limpio_G_1)
-  sampled_ids <- FUN(ids, ...)
-  oso_limpio_G_1 <- prune_samples(sampled_ids, oso_limpio_G_1)
-  return(oso_limpio_G_1)
-}
+#sample_osoo_1 <- function(oso_limpio_G_1, FUN = sample,...){
+ # ids <- sample_names(oso_limpio_G_1)
+ #sampled_ids <- FUN(ids, ...)
+#oso_limpio_G_1 <- prune_samples(sampled_ids, oso_limpio_G_1)
+#  return(oso_limpio_G_1)
+#}
 
-oso_corto_G_1<- sample_osoo_1(oso_limpio_G_1, size=10)
-oso_corto_G_1
-save(oso_corto_G_1, file = "Data/oso_corto_G_1")
+#oso_corto_G_1<- sample_osoo_1(oso_limpio_G_1, size=10)
+#oso_corto_G_1
+#save(oso_corto_G_1, file = "Data/oso_corto_G_1")
 
 
 # Para peces (familias):
 
-load("Data/pez_limpio_1_familia")
+#load("Data/pez_limpio_1_familia")
 #Paso de tener 261 samples a 
-pez_limpio_F_1
-sample_pezz <- function(pez_limpio_F_1, FUN = sample,...){
-  ids <- sample_names(pez_limpio_F_1)
-  sampled_ids <- FUN(ids, ...)
-  pez_limpio_F_1 <- prune_samples(sampled_ids, pez_limpio_F_1)
-  return(pez_limpio_F_1)
-}
+#pez_limpio_F_1
+#sample_pezz <- function(pez_limpio_F_1, FUN = sample,...){
+ # ids <- sample_names(pez_limpio_F_1)
+  #sampled_ids <- FUN(ids, ...)
+  #pez_limpio_F_1 <- prune_samples(sampled_ids, pez_limpio_F_1)
+  #return(pez_limpio_F_1)
+#}
 
-pez_corto_F_1<- sample_pezz(pez_limpio_F_1, size=10)
-pez_corto_F_1
-save(pez_corto_F_1, file = "Data/pez_corto_F1")
+#pez_corto_F_1<- sample_pezz(pez_limpio_F_1, size=10)
+#pez_corto_F_1
+#save(pez_corto_F_1, file = "Data/pez_corto_F1")
 
 
 # Para peces (generos):
 
-load("Data/pez_limpio_1_genero")
+#load("Data/pez_limpio_1_genero")
 #Paso de tener 261 samples a 10 samples
-pez_limpio_G_1
-sample_pezz_1 <- function(pez_limpio_G_1, FUN = sample,...){
-  ids <- sample_names(pez_limpio_G_1)
-  sampled_ids <- FUN(ids, ...)
-  pez_limpio_G_1 <- prune_samples(sampled_ids, pez_limpio_G_1)
-  return(pez_limpio_G_1)
-}
+#pez_limpio_G_1
+#sample_pezz_1 <- function(pez_limpio_G_1, FUN = sample,...){
+ # ids <- sample_names(pez_limpio_G_1)
+#  sampled_ids <- FUN(ids, ...)
+#  pez_limpio_G_1 <- prune_samples(sampled_ids, pez_limpio_G_1)
+#  return(pez_limpio_G_1)
+#}
 
-pez_corto_G_1<- sample_pezz_1(pez_limpio_G_1, size=10)
-pez_corto_G_1
-save(pez_corto_G_1, file = "Data/pez_corto_1")
+#pez_corto_G_1<- sample_pezz_1(pez_limpio_G_1, size=10)
+#pez_corto_G_1
+#save(pez_corto_G_1, file = "Data/pez_corto_1")
 
 
 # Para osos cafes (familia):
 
-load("Data/oso_cafe_limpio")
-load("Data/oso_limpio_2_familia")
+#load("Data/oso_cafe_limpio")
+#load("Data/oso_limpio_2_familia")
 #Paso de tener 66 samples a 10
-oso_limpio_F_2
-sample_oso_2 <- function(oso_limpio_F_2, FUN = sample,...){
-  ids <- sample_names(oso_limpio_F_2)
-  sampled_ids <- FUN(ids, ...)
-  oso_limpio_F_2 <- prune_samples(sampled_ids, oso_limpio_F_2)
-  return(oso_limpio_F_2)
-}
+#oso_limpio_F_2
+#sample_oso_2 <- function(oso_limpio_F_2, FUN = sample,...){
+ # ids <- sample_names(oso_limpio_F_2)
+  #sampled_ids <- FUN(ids, ...)
+  #oso_limpio_F_2 <- prune_samples(sampled_ids, oso_limpio_F_2)
+  #return(oso_limpio_F_2)
+#}
 
-oso_corto_F_2<- sample_oso_2(oso_limpio_F_2, size=10)
-oso_corto_F_2
-save(oso_corto_F_2, file = "Data/oso_corto_F_2")
+#oso_corto_F_2<- sample_oso_2(oso_limpio_F_2, size=10)
+#oso_corto_F_2
+#save(oso_corto_F_2, file = "Data/oso_corto_F_2")
 
 
 # Para osos cafes (genero): 
 
-load("Data/oso_limpio_2_genero")
+#load("Data/oso_limpio_2_genero")
 #Paso de tener 66 samples a 10 
-oso_limpio_G_2
-sample_osoo_2 <- function(oso_limpio_G_2, FUN = sample,...){
-  ids <- sample_names(oso_limpio_G_2)
-  sampled_ids <- FUN(ids, ...)
-  oso_limpio_G_2 <- prune_samples(sampled_ids, oso_limpio_G_2)
-  return(oso_limpio_G_2)
-}
+#oso_limpio_G_2
+#sample_osoo_2 <- function(oso_limpio_G_2, FUN = sample,...){
+ # ids <- sample_names(oso_limpio_G_2)
+#  sampled_ids <- FUN(ids, ...)
+#  oso_limpio_G_2 <- prune_samples(sampled_ids, oso_limpio_G_2)
+#  return(oso_limpio_G_2)
+#}
 
-oso_corto_G_2<- sample_osoo_2(oso_limpio_G_2, size=10)
-save(oso_corto_G_2,file = "Data/oso_corto_G_2")
+#oso_corto_G_2<- sample_osoo_2(oso_limpio_G_2, size=10)
+#ave(oso_corto_G_2,file = "Data/oso_corto_G_2")
 
 # Para cargar las "nuevas" bases de datos:
-load("Data/oso_corto_F_1")
-load("Data/oso_corto_G_1")
-load("Data/oso_corto_F_2")
-load("Data/oso_corto_G_2")
-load("Data/pez_corto_F1")
-load("Data/pez_corto_1")
+#load("Data/oso_corto_F_1")
+#load("Data/oso_corto_G_1")
+#load("Data/oso_corto_F_2")
+#load("Data/oso_corto_G_2")
+#load("Data/pez_corto_F1")
+#load("Data/pez_corto_1")
 
 # Para juntar los phyloseq:
 #Se juntaron los phyloseq de familia
-data_familia_corto<- merge_phyloseq(oso_corto_F_1, pez_corto_F_1, oso_corto_F_2)
-data_familia_corto
+#data_familia_corto<- merge_phyloseq(oso_corto_F_1, pez_corto_F_1, oso_corto_F_2)
+#data_familia_corto
 
 #Se juntaron los phyloseq de genero
-data_genero_corto<- merge_phyloseq(oso_corto_G_1, pez_corto_G_1, oso_corto_G_2)
-data_genero_corto
+#data_genero_corto<- merge_phyloseq(oso_corto_G_1, pez_corto_G_1, oso_corto_G_2)
+#data_genero_corto
 
 
 
 # Esto hace un plor con las muestras mas abundantes:
-plot_bar(data_familia_corto)
+#plot_bar(data_familia_corto)
 
 
 # Creo que con esto se pueden ver los mas abundantes (de nuevo):
@@ -360,23 +360,23 @@ plot_bar(data_familia_corto)
 library(ggplot2)
 library(MicrobiotaProcess)
 
-classtaxa <- get_taxadf(obj=data_familia_corto, taxlevel=7, type = "others")
+#classtaxa <- get_taxadf(obj=data_familia_corto, taxlevel=7, type = "others")
 
 # The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
-pclass <- ggbartax(obj=classtaxa) +
-  xlab(NULL) +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
-  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+#pclass <- ggbartax(obj=classtaxa) +
+#  xlab(NULL) +
+#  ylab("relative abundance (%)") +
+#  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+#  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
-pclass
+#pclass
 
 # Y con la grafica anterior salen las mismas muestras mas abundantes.
 
 
-View(otu_table(data_familia_corto))
-View(phy_tree((data_familia_corto)))
-View(sample_data(data_familia_corto))
+#View(otu_table(data_familia_corto))
+#View(phy_tree((data_familia_corto)))
+#View(sample_data(data_familia_corto))
 
 
 
@@ -386,19 +386,20 @@ library(ggplot2)
 library(MicrobiotaProcess)
 
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
-osofamilia <- get_taxadf(obj=oso_limpio_F_1, taxlevel=3, type = "others")
+#osofamilia <- get_taxadf(obj=oso_limpio_F_1, taxlevel=3, type = "others")
 
 # The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
-plot_osofamilia <- ggbartax(obj=osofamilia) +
-  xlab(NULL) +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
-  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+#plot_osofamilia <- ggbartax(obj=osofamilia) +
+#  xlab(NULL) +
+#  ylab("relative abundance (%)") +
+#  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+#  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
-plot_osofamilia
+#plot_osofamilia
 
 getwd()
-setwd("C:/Users/Luis Diego/Documents/Proyecto_Final_Genomica")
+#setwd("C:/Users/Luis Diego/Documents/Proyecto_Final_Genomica")
+
 load("Data/oso_limpio_1_familia")
 load("Data/oso_limpio_1_genero")
 load("Data/oso_limpio_2_familia")
@@ -414,6 +415,16 @@ sample_data(oso_limpio_G_1)$nuevacol<-"DATA_OSO1"
 #sample_data(oso_limpio_G_2)$nuevacol<-"DATA_OSO2"
 sample_data(pez_limpio_F_1)$nuevacol<-"DATA_PEZ1"
 sample_data(pez_limpio_G_1)$nuevacol<-"DATA_PEZ2"
+
+#OSOS
+View(sample_data(oso_limpio_F_1))
+View(sample_data(oso_limpio_G_1))
+
+#PECES
+View(sample_data(pez_limpio_F_1))
+View(sample_data(pez_limpio_G_1))
+
+
 
 <<<<<<< HEAD
 intento1<-merge_phyloseq(oso_limpio_F_1, pez_limpio_F_1)
@@ -502,8 +513,9 @@ print(disease_states)
 View(sample_data(x1))
 
 
+
 # Para ver las 6 graficas al mismo tiempo:
-par(mfrow=c(3,2))
+#par(mfrow=c(3,2))
   # Pero creo que no se puede porque son graficas muy grandes :(
 
 
@@ -512,87 +524,87 @@ par(mfrow=c(3,2))
 
 
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
-oso1familia <- get_taxadf(obj=intento1, taxlevel=7, type = "others")
+#oso1familia <- get_taxadf(obj=intento1, taxlevel=7, type = "others")
 
-# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
-plot_oso1familia <- ggbartax(obj=oso1familia) +
-  xlab("nuevacol") +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
-  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):#
+#plot_oso1familia <- ggbartax(obj=oso1familia) +
+#  xlab("nuevacol") +
+#  ylab("relative abundance (%)") +
+#  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+#  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
-plot_oso1familia
+#plot_oso1familia
 
 
 # Para oso_limpio_G_1:
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
-oso1genero <- get_taxadf(obj=oso_limpio_G_1, taxlevel=7, type = "others")
+#oso1genero <- get_taxadf(obj=oso_limpio_G_1, taxlevel=7, type = "others")
 
 # The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
-plot_oso1genero <- ggbartax(obj=oso1genero) +
-  xlab(NULL) +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
-  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+#plot_oso1genero <- ggbartax(obj=oso1genero) +
+#  xlab(NULL) +
+#  ylab("relative abundance (%)") +
+#  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+#  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
-plot_oso1genero
+#plot_oso1genero
 
 
 # Para oso_limpio_F_2:
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
-oso2familia <- get_taxadf(obj=oso_limpio_F_2, taxlevel=7, type = "others")
+#oso2familia <- get_taxadf(obj=oso_limpio_F_2, taxlevel=7, type = "others")
 
 # The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
-plot_oso2familia <- ggbartax(obj=oso2familia) +
-  xlab(NULL) +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
-  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+#plot_oso2familia <- ggbartax(obj=oso2familia) +
+#  xlab(NULL) +
+#  ylab("relative abundance (%)") +
+# scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+#  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
-plot_oso2familia
+#plot_oso2familia
 
 
 
 # Para oso_limpio_G_2:
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
-oso2genero <- get_taxadf(obj=oso_limpio_G_2, taxlevel=7, type = "others")
+#oso2genero <- get_taxadf(obj=oso_limpio_G_2, taxlevel=7, type = "others")
 
 # The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
-plot_oso2genero <- ggbartax(obj=oso2genero) +
-  xlab(NULL) +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
-  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+#plot_oso2genero <- ggbartax(obj=oso2genero) +
+ # xlab(NULL) +
+ # ylab("relative abundance (%)") +
+  #scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  #guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
-plot_oso2genero
+#plot_oso2genero
 
 
 
 # Para pez_limpio_f_1
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
-pez1familia <- get_taxadf(obj=pez_limpio_F_1, taxlevel=7, type = "others")
+#pez1familia <- get_taxadf(obj=pez_limpio_F_1, taxlevel=7, type = "others")
 
 # The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
-plot_pez1familia <- ggbartax(obj=pez1familia) +
-  xlab(NULL) +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
-  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+#plot_pez1familia <- ggbartax(obj=pez1familia) +
+#  xlab(NULL) +
+#  ylab("relative abundance (%)") +
+#  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+#  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
-plot_pez1familia
+#plot_pez1familia
 
 
 # Para pez_limpio_g_1
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
-pez1genero <- get_taxadf(obj=pez_limpio_G_1, taxlevel=7, type = "others")
+#pez1genero <- get_taxadf(obj=pez_limpio_G_1, taxlevel=7, type = "others")
 
 # The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
-plot_pez1genero <- ggbartax(obj=pez1genero) +
-  xlab(NULL) +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
-  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+#plot_pez1genero <- ggbartax(obj=pez1genero) +
+#  xlab(NULL) +
+#  ylab("relative abundance (%)") +
+#  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+#  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
-plot_pez1genero
+#plot_pez1genero
 
 

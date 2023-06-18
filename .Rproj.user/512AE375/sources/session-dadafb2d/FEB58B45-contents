@@ -418,6 +418,8 @@ sample_data(pez_corto_G_1)$nuevacol<-"DATA_PEZ2"
 par(mfrow=c(3,2))
   # Pero creo que no se puede porque son graficas muy grandes :(
 
+
+
 # Para oso_limpio_F_1:
 
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias

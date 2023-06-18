@@ -396,7 +396,8 @@ plot_osofamilia <- ggbartax(obj=osofamilia) +
 
 plot_osofamilia
 
-
+getwd()
+setwd("C:/Users/Luis Diego/Documents/Proyecto_Final_Genomica")
 load("Data/oso_limpio_1_familia")
 load("Data/oso_limpio_1_genero")
 load("Data/oso_limpio_2_familia")
@@ -411,7 +412,23 @@ sample_data(oso_limpio_F_2)$nuevacol<-"DATA_OSO2"
 sample_data(oso_limpio_G_1)$nuevacol<-"DATA_OSO1"
 sample_data(oso_limpio_G_2)$nuevacol<-"DATA_OSO2"
 sample_data(pez_limpio_F_1)$nuevacol<-"DATA_PEZ1"
-sample_data(pez_corto_G_1)$nuevacol<-"DATA_PEZ2"
+sample_data(pez_limpio_G_1)$nuevacol<-"DATA_PEZ2"
+
+intento1<- merge_phyloseq(oso_limpio_F_1, oso_limpio_F_2, pez_limpio_F_1)
+library(microbiome)
+View(sample_data(intento1))
+View(tax_table(intento1))
+
+otu_table(intento1)
+otu_table(oso_limpio_F_1)
+otu_table(oso_limpio_F_2)
+
+data("GlobalPatterns")
+otu_table(GlobalPatterns)
+View(sample_data(GlobalPatterns))
+
+x1<-tax_glom(intento1, taxrank="Family", NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
+x1
 
 
 # Para ver las 6 graficas al mismo tiempo:
@@ -422,12 +439,13 @@ par(mfrow=c(3,2))
 
 # Para oso_limpio_F_1:
 
+
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
-oso1familia <- get_taxadf(obj=oso_limpio_F_1, taxlevel=7, type = "others")
+oso1familia <- get_taxadf(obj=intento1, taxlevel=7, type = "others")
 
 # The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
 plot_oso1familia <- ggbartax(obj=oso1familia) +
-  xlab(NULL) +
+  xlab(nuevacol) +
   ylab("relative abundance (%)") +
   scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
   guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))

@@ -107,7 +107,7 @@ plot_bar(oso, fill = "Genus")
 # se necesita del doi que viene en la pagina de zenodo para que identifique que base de datos se descargara
 
 # Se descarga zen4R y se carga:
-install.packages("zen4R")
+#install.packages("zen4R")
 library(zen4R)
 
 
@@ -505,3 +505,5 @@ plot_pez1genero <- ggbartax(obj=pez1genero) +
   guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
 plot_pez1genero
+
+

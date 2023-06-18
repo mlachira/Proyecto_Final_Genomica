@@ -3,7 +3,7 @@
     "path": "~/GitHub/Proyecto_Final_Genomica_Funcional/Scripts/bases_de_datos_mgnify.R",
     "project_path": "Scripts/bases_de_datos_mgnify.R",
     "type": "r_source",
-    "hash": "519685758",
+    "hash": "598881036",
     "contents": "",
     "dirty": false,
     "created": 1687040873350.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "386,131",
-        "scrollLine": "380"
+        "cursorPosition": "418,64",
+        "scrollLine": "410"
     },
     "folds": "",
-    "lastKnownWriteTime": 1687046209,
+    "lastKnownWriteTime": 1687066969,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1687046209339,
+    "last_content_update": 1687066969715,
     "read_only": false,
     "read_only_alternatives": []
 }

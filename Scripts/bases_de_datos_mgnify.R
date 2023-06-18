@@ -396,3 +396,110 @@ plot_osofamilia <- ggbartax(obj=osofamilia) +
 
 plot_osofamilia
 
+
+load("Data/oso_limpio_1_familia")
+load("Data/oso_limpio_1_genero")
+load("Data/oso_limpio_2_familia")
+load("Data/oso_limpio_2_genero")
+load("Data/pez_limpio_1_familia")
+load("Data/pez_limpio_1_genero")
+
+
+# Adicion de una columna:
+sample_data(oso_limpio_F_1)$nuevacol<-"DATA_OSO1"
+sample_data(oso_limpio_F_2)$nuevacol<-"DATA_OSO2"
+sample_data(oso_limpio_G_1)$nuevacol<-"DATA_OSO1"
+sample_data(oso_limpio_G_2)$nuevacol<-"DATA_OSO2"
+sample_data(pez_limpio_F_1)$nuevacol<-"DATA_PEZ1"
+sample_data(pez_corto_G_1)$nuevacol<-"DATA_PEZ2"
+
+
+# Para ver las 6 graficas al mismo tiempo:
+par(mfrow=c(3,2))
+  # Pero creo que no se puede porque son graficas muy grandes :(
+
+# Para oso_limpio_F_1:
+
+# En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
+oso1familia <- get_taxadf(obj=oso_limpio_F_1, taxlevel=7, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
+plot_oso1familia <- ggbartax(obj=oso1familia) +
+  xlab(NULL) +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_oso1familia
+
+
+# Para oso_limpio_G_1:
+# En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
+oso1genero <- get_taxadf(obj=oso_limpio_G_1, taxlevel=7, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
+plot_oso1genero <- ggbartax(obj=oso1genero) +
+  xlab(NULL) +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_oso1genero
+
+
+# Para oso_limpio_F_2:
+# En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
+oso2familia <- get_taxadf(obj=oso_limpio_F_2, taxlevel=7, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
+plot_oso2familia <- ggbartax(obj=oso2familia) +
+  xlab(NULL) +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_oso2familia
+
+
+
+# Para oso_limpio_G_2:
+# En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
+oso2genero <- get_taxadf(obj=oso_limpio_G_2, taxlevel=7, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
+plot_oso2genero <- ggbartax(obj=oso2genero) +
+  xlab(NULL) +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_oso2genero
+
+
+
+# Para pez_limpio_f_1
+# En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
+pez1familia <- get_taxadf(obj=pez_limpio_F_1, taxlevel=7, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
+plot_pez1familia <- ggbartax(obj=pez1familia) +
+  xlab(NULL) +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_pez1familia
+
+
+# Para pez_limpio_g_1
+# En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
+pez1genero <- get_taxadf(obj=pez_limpio_G_1, taxlevel=7, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):
+plot_pez1genero <- ggbartax(obj=pez1genero) +
+  xlab(NULL) +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_pez1genero

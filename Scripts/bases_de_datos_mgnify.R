@@ -422,6 +422,7 @@ View(tax_table(intento1))
 otu_table(intento1)
 otu_table(oso_limpio_F_1)
 otu_table(oso_limpio_F_2)
+otu_table(pez_limpio_F_1)
 
 data("GlobalPatterns")
 otu_table(GlobalPatterns)

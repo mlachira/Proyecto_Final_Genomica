@@ -33,11 +33,15 @@ Tab4<- evenness(pez_limpio_G_1, c("pielou","simpson"))
 Tab4
 
 #Diversidad beta
-oso.famialia.bray<- ordinate(oso_limpio_F_1, method="MDS", distance="bray")
-oso.famialia.bray
+oso.familia.bray<- ordinate(oso_limpio_F_1, method="MDS", distance="bray")
+oso.familia.bray
+oso_limpio_F_1
+View(sample_data(oso_limpio_F_1))
 #Por alguna razon ya corre estos
 oso.genero.bray<- ordinate(oso_limpio_G_1, method="MDS", distance="bray")
 oso.genero.bray
+oso_limpio_G_1
+View(sample_data(oso_limpio_G_1))
 pez.famialia.bray<- ordinate(pez_limpio_F_1, method="MDS", distance="bray")
 pez.famialia.bray
 pez.genero.bray<- ordinate(pez_limpio_G_1, method="MDS", distance="bray")
@@ -79,7 +83,8 @@ library(microbiome)
 #devtools::install_github('microsud/microbiomeutilities')
 library(microbiomeutilities)
 
-
+getwd()
+setwd("C:/Users/gabof/OneDrive/Documentos/GitHub/Proyecto_Final_Genomica_Funcional")
 load("Data/oso_limpio_1_familia")
 load("Data/oso_limpio_1_genero")
 #load("Data/oso_limpio_2_familia")

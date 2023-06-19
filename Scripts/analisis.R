@@ -275,3 +275,99 @@ red_1<-plot_net(taxas_juntas, type = "taxa", point_label = "Genus", point_size =
 save(red_1, file = "Plots/red_genero")
 
 #####
+pseq.rel <- microbiome::transform(taxas_juntas, "compositional")
+head(prevalence(pseq.rel, detection = 1/100, sort = TRUE))
+head(prevalence(pseq.rel, detection = 1/100, sort = TRUE, count = TRUE))
+core.taxa.standard <- core_members(pseq.rel, detection = 0, prevalence = 50/100)
+pseq.core <- core(pseq.rel, detection = 0, prevalence = .5)
+pseq.core2 <- aggregate_rare(pseq.rel, "Family", detection = 0, prevalence = .5)
+core.taxa <- taxa(pseq.core)
+det <- c(0, 0.1, 0.5, 2, 5, 20)/100
+prevalences <- seq(.05, 1, .05)
+#ggplot(d) + geom_point(aes(x, y)) + scale_x_continuous(trans="log10", limits=c(NA,1))
+
+#Core microbiome
+core<- plot_core(pseq.rel, 
+          prevalences = prevalences, 
+          detections = det, 
+          plot.type = "lineplot") + 
+  xlab("Relative Abundance (%)")
+save(core, file = "Plots/core_microbiome")
+
+
+
+
+###Heatmap
+install.packages("RColorBrewer")
+library(RColorBrewer)
+install.packages("reshape")
+library(reshape)
+
+prevalences <- seq(.05, 1, .05)
+
+detections <- round(10^seq(log10(0.01), log10(.2), length = 9), 3)
+
+# Also define gray color palette
+gray <- gray(seq(0,1,length=5))
+
+#Added pseq.rel, I thin... must be checked if it was in the the rednred version,; where it is initialized
+#pseq.rel<- microbiome::transform(pseq, 'compositional')
+#min-prevalence gets the 100th highest prevalence
+install.packages("remotes")
+remotes::install_github("microbiome/microbiome")
+library(microbiome)
+p <- plot_core(pseq.rel,
+               plot.type = "heatmap", 
+               colours = gray,
+               prevalences = prevalences, 
+               detections = detections, 
+               min.prevalence = prevalence(pseq.rel, sort = TRUE)[100]) +
+  labs(x = "Detection Threshold\n(Relative Abundance (%))") +
+  
+  #Adjusts axis text size and legend bar height
+  theme(axis.text.y= element_text(size=8, face="italic"),
+        axis.text.x.bottom=element_text(size=8),
+        axis.title = element_text(size=10),
+        legend.text = element_text(size=8),
+        legend.title = element_text(size=10))
+
+print(p)
+save(p, file = "Plots//heat_map")
+detections <- seq(from = 50, to = round(max(abundances(taxas_juntas))/10, -1), by = 100)
+
+p1 <- plot_core(taxas_juntas, plot.type = "heatmap",
+               prevalences = prevalences,
+               detections = detections,
+               colours = rev(brewer.pal(5, "Spectral")),
+               min.prevalence = .2, horizontal = TRUE) +
+  theme(axis.text.x= element_text(size=8, face="italic", hjust=1),
+        axis.text.y= element_text(size=8),
+        axis.title = element_text(size=10),
+        legend.text = element_text(size=8),
+        legend.title = element_text(size=10))
+
+print(p1)
+save(p1, file= "Plots/heatmap_mas_cosas")
+
+#Histograma de abundancias
+plot_density(pseq, "Dialister") + ggtitle("Absolute abundance")
+
+# Same with log10 compositional abundances
+#No se si snos sirve esto, en base a la prevalencia que dio el heat map puse el tax 55775, porque es el que tenía la prevalencia más alta
+x <- microbiome::transform(taxas_juntas, "compositional")
+tax <- "55775"
+plot_density(x, tax, log10 = TRUE) +
+  ggtitle("Relative abundance") +
+  xlab("Relative abundance (%)")
+otu_table(taxas_juntas)
+
+#Boxplot de abundancias
+p3 <- boxplot_abundance(taxas_juntas, x = "nuevacol", y = "55775") + scale_y_log10()
+print(p3)
+save(p3, file = "Plots/abundancia_55775")
+
+#Para ver la variación de la microbiota
+#Falta ver como quitar los 0
+p4 <- plot_landscape(pseq.rel, method = "NMDS", distance = "bray", col = "nuevacol", size = 3)
+print(p4)
+

@@ -9,6 +9,8 @@ otu.rare= as.data.frame(otu.rare)
 sample_names=rownames(otu.rare)
 otu_rarecurve<- rarecurve(otu.rare, setp=10000, label=T)
 save(otu_rarecurve, file = "Plots/curva_rarefacción_oso")
+load("Plots/curva_rarefacción_oso")
+
 
 #Pez limpio Familia
 otu.rare= otu_table(pez_limpio_F_1)
@@ -17,7 +19,9 @@ sample_names=rownames(otu.rare)
 otu_rarecurve_p<- rarecurve(otu.rare, setp=10000, label=T)
 save(otu_rarecurve_p, file = "Plots/curva_rarefacción_pez")
 
-
+#install.packages("gtExtras")
+library(gtExtras)
+library(gt)
 
 #Diversidad alfa
   # Shannon
@@ -25,10 +29,21 @@ save(otu_rarecurve_p, file = "Plots/curva_rarefacción_pez")
 library("microbiome")
 Tab<- evenness(oso_limpio_F_1, c("pielou","simpson"))
 Tab
+View(Tab)
+class(Tab)
+
+# Esto crea una tabla, pero solo muestra los primeros 6 valores y no en un orden especifico.
+head(Tab) %>%
+  gt() %>% 
+  gt_theme_guardian()
+
+
 Tab2<- evenness(oso_limpio_G_1, c("pielou","simpson"))
 Tab2
+
 Tab3<- evenness(pez_limpio_F_1, c("pielou","simpson"))
 Tab3
+
 Tab4<- evenness(pez_limpio_G_1, c("pielou","simpson"))
 Tab4
 
@@ -83,8 +98,7 @@ library(microbiome)
 #devtools::install_github('microsud/microbiomeutilities')
 library(microbiomeutilities)
 
-getwd()
-setwd("C:/Users/gabof/OneDrive/Documentos/GitHub/Proyecto_Final_Genomica_Funcional")
+
 load("Data/oso_limpio_1_familia")
 load("Data/oso_limpio_1_genero")
 #load("Data/oso_limpio_2_familia")
@@ -198,12 +212,10 @@ save(venn_genero, file="Plots/venn_genero")
 getwd()
 
 #####
-# Pero creo que no se puede porque son graficas muy grandes :(
 
-
+# Graficas de abundancias:
 
 # Para oso_limpio_F_1:
-
 
 # En taxlevel la verdad no entiendo que cambia, solo se que el maximo es de 7 y las graficas si salen bien diferentes si lo cambias
 if (!require("BiocManager", quietly = TRUE))
@@ -222,6 +234,9 @@ plot_oso1familia <- ggbartax(obj=oso1familia) +
   guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
 plot_oso1familia
+
+
+# Para los peces (familia):
 
 pez1familia <- get_taxadf(obj=pez_limpio_F_1, taxlevel=7, type = "others")
 

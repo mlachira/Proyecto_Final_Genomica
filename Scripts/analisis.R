@@ -22,6 +22,7 @@ save(otu_rarecurve_p, file = "Plots/curva_rarefacción_pez")
 #Diversidad alfa
   # Shannon
   # Simpson
+library("microbiome")
 Tab<- evenness(oso_limpio_F_1, c("pielou","simpson"))
 Tab
 Tab2<- evenness(oso_limpio_G_1, c("pielou","simpson"))
@@ -34,16 +35,13 @@ Tab4
 #Diversidad beta
 oso.famialia.bray<- ordinate(oso_limpio_F_1, method="MDS", distance="bray")
 oso.famialia.bray
+#Por alguna razon ya corre estos
 oso.genero.bray<- ordinate(oso_limpio_G_1, method="MDS", distance="bray")
 oso.genero.bray
 pez.famialia.bray<- ordinate(pez_limpio_F_1, method="MDS", distance="bray")
 pez.famialia.bray
 pez.genero.bray<- ordinate(pez_limpio_G_1, method="MDS", distance="bray")
 pez.genero.bray
-
-par(mfrow=c(2,1))
-hist(oso_limpio_F_1$shannon, main="Shannon diversity", xlab="", breaks=10)
-hist(pez_limpio_F_1$shannon, main="Shannon diversity", xlab="", breaks=10)
 
 
 p.shannon<- boxplot_alpha(taxas_juntas,
@@ -263,5 +261,12 @@ save(prevalencia_familia, file = "Plots/prevalencia_familia")
 red<-plot_net(taxas_juntas, type = "taxa", point_label = "Family", point_size = 2, point_alpha = 0.5, maxdist = 0.5, color = "Family", distance = "bray", laymeth = "auto")
 save(red, file = "Plots/red")
 
+p1<- subset_samples(taxas_juntas)
+p1<-core(p1, detection= 0.1/100, prevalence=40/100)
+prevalencia_genero<-plot_taxa_prevalence(p0, "Genus", detection = 0.1/100)
+save(prevalencia_familia, file = "Plots/prevalencia_genero")
+
+red_1<-plot_net(taxas_juntas, type = "taxa", point_label = "Genus", point_size = 2, point_alpha = 0.5, maxdist = 0.5, color = "Genus", distance = "bray", laymeth = "auto")
+save(red_1, file = "Plots/red_genero")
 
 #####

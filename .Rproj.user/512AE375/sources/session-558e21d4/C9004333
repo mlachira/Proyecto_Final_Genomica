@@ -1,0 +1,27 @@
+{
+    "id": "C9004333",
+    "path": "~/GitHub/Proyecto_Final_Genomica_Funcional/Scripts/analisis.R",
+    "project_path": "Scripts/analisis.R",
+    "type": "r_source",
+    "hash": "677636064",
+    "contents": "",
+    "dirty": false,
+    "created": 1687153084029.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "237,0",
+        "scrollLine": "231"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1687157216,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1687157216406,
+    "read_only": false,
+    "read_only_alternatives": []
+}

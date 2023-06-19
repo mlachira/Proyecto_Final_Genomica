@@ -209,7 +209,15 @@ plot_pez1familia <- ggbartax(obj=pez1familia) +
 
 plot_pez1familia
 
+
 #Cambie los valores de detection y prevalence para que saliera bien
 p0<- subset_samples(taxas_juntas)
-p0<-core(p0, detection= 0.4/100, prevalence=40/100)
-plot_taxa_prevalence(p0, "Family", detection = 0.1/100)
+p0<-core(p0, detection= 0.1/100, prevalence=40/100)
+prevalencia_familia<-plot_taxa_prevalence(p0, "Family", detection = 0.1/100)
+save(prevalencia_familia, file = "Plots/prevalencia_familia")
+
+red<-plot_net(taxas_juntas, type = "taxa", point_label = "Family", point_size = 2, point_alpha = 0.5, maxdist = 0.5, color = "Family", distance = "bray", laymeth = "auto")
+save(red, file = "Plots/red")
+
+
+#####

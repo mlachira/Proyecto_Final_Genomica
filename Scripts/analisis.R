@@ -1,23 +1,45 @@
 # ANALISIS A REALIZAR #
 
 #Curva de rarefacción
+#Oso limpio Familia
 library(vegan)
+par(mfrow=c(1,2))
 otu.rare= otu_table(oso_limpio_F_1)
 otu.rare= as.data.frame(otu.rare)
 sample_names=rownames(otu.rare)
 otu_rarecurve<- rarecurve(otu.rare, setp=10000, label=T)
 save(otu_rarecurve, file = "Plots/curva_rarefacción_oso")
 
+#Pez limpio Familia
+otu.rare= otu_table(pez_limpio_F_1)
+otu.rare= as.data.frame(otu.rare)
+sample_names=rownames(otu.rare)
+otu_rarecurve_p<- rarecurve(otu.rare, setp=10000, label=T)
+save(otu_rarecurve_p, file = "Plots/curva_rarefacción_pez")
+
+
+
 #Diversidad alfa
   # Shannon
   # Simpson
 Tab<- evenness(oso_limpio_F_1, c("pielou","simpson"))
 Tab
-  # Chao1 (tal vez)
+Tab2<- evenness(oso_limpio_G_1, c("pielou","simpson"))
+Tab2
+Tab3<- evenness(pez_limpio_F_1, c("pielou","simpson"))
+Tab3
+Tab4<- evenness(pez_limpio_G_1, c("pielou","simpson"))
+Tab4
 
 #Diversidad beta
-psd5.bray<- ordinate(oso_limpio_F_1, method="MDS", distance="bray")
-psd5.bray
+oso.famialia.bray<- ordinate(oso_limpio_F_1, method="MDS", distance="bray")
+oso.famialia.bray
+oso.genero.bray<- ordinate(oso_limpio_G_1, method="MDS", distance="bray")
+oso.genero.bray
+pez.famialia.bray<- ordinate(pez_limpio_F_1, method="MDS", distance="bray")
+pez.famialia.bray
+pez.genero.bray<- ordinate(pez_limpio_G_1, method="MDS", distance="bray")
+pez.genero.bray
 
 par(mfrow=c(2,1))
 hist(oso_limpio_F_1$shannon, main="Shannon diversity", xlab="", breaks=10)
@@ -208,6 +230,28 @@ plot_pez1familia <- ggbartax(obj=pez1familia) +
   guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 
 plot_pez1familia
+
+oso1genero <- get_taxadf(obj=oso_limpio_G_1, taxlevel=7, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):#
+plot_oso1genero <- ggbartax(obj=oso1genero) +
+  xlab("nuevacol") +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_oso1genero
+
+pez1genero <- get_taxadf(obj=pez_limpio_G_1, taxlevel=7, type = "others")
+
+# The 30 most abundant taxonomy will be visualized by default (parameter `topn=30`):#
+plot_pez1genero <- ggbartax(obj=pez1genero) +
+  xlab("nuevacol") +
+  ylab("relative abundance (%)") +
+  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
+
+plot_pez1genero
 
 
 #Cambie los valores de detection y prevalence para que saliera bien

@@ -392,7 +392,7 @@ par(mfrow=c(2,1)) # para obtener dos plots en una imagen
 
 # Para los osos (familia):
 
-oso1familia <- get_taxadf(obj=oso_limpio_F_1, taxlevel=6, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
+oso1familia <- get_taxadf(obj=oso_corto_F_1, taxlevel=6, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
   # En taxlevel se pone el nivel taxonomico, hay que cambiarlo para ver familias / generos
   # Taxlevel de 6 es para familias
 
@@ -543,26 +543,3 @@ plot_heatmap(carbom_abund, method = "NMDS", distance = "bray")
 plot_heatmap(carbom_abund, method = "MDS", distance = "(A+B-2*J)/(A+B-J)", 
              taxa.label = "Genus", taxa.order = "Genus", 
              trans=NULL, low="beige", high="blue", na.value="beige")
-
-## Histograma de abundancias ##
-
-plot_density(pseq, "Dialister") + ggtitle("Absolute abundance")
-
-# Same with log10 compositional abundances
-#No se si snos sirve esto, en base a la prevalencia que dio el heat map puse el tax 55775, porque es el que tenía la prevalencia más alta
-x <- microbiome::transform(taxas_juntas, "compositional")
-tax <- "55775"
-plot_density(x, tax, log10 = TRUE) +
-  ggtitle("Relative abundance") +
-  xlab("Relative abundance (%)")
-otu_table(taxas_juntas)
-
-#Boxplot de abundancias
-p3 <- boxplot_abundance(taxas_juntas, x = "nuevacol", y = "55775") + scale_y_log10()
-print(p3)
-save(p3, file = "Plots/abundancia_55775")
-
-#Para ver la variación de la microbiota
-p4 <- plot_landscape(pseq.rel, method = "NMDS", distance = "bray", col = "nuevacol", size = 3)
-print(p4)
-

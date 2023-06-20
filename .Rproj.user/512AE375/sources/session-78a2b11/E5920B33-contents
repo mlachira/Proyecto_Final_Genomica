@@ -96,7 +96,7 @@ par(mfrow=c(1,2)) # para que aparezcan dos plot en una sola imagen
 otu.rare= otu_table(oso_limpio_F_1) # nos referimos al otu_table de la base
 otu.rare= as.data.frame(otu.rare) # lo convertimos en data frame
 sample_names=rownames(otu.rare) # acomodamos los nombres de las filas 
-otu_rarecurve<- rarecurve(otu.rare, setp=10000, label=T) # para obtener la curva de rarefaccion
+otu_rarecurve<- rarecurve(otu.rare, setp=10000, label=F, ylab = "Familia") # para obtener la curva de rarefaccion
 save(otu_rarecurve, file = "Plots/curva_rarefacción_oso") # para guardar la curva en la carpeta "Plots"
 load("Plots/curva_rarefacción_oso") # con esto cargamos lo que salvamos.
 
@@ -105,8 +105,24 @@ load("Plots/curva_rarefacción_oso") # con esto cargamos lo que salvamos.
 otu.rare= otu_table(pez_limpio_F_1) # nos referimos al otu_table de la base
 otu.rare= as.data.frame(otu.rare) # lo convertimos en data frame
 sample_names=rownames(otu.rare) # acomodamos los nombres de las filas 
-otu_rarecurve_p<- rarecurve(otu.rare, setp=10000, label=T) # para obtener la curva de rarefaccion
+otu_rarecurve_p<- rarecurve(otu.rare, setp=10000, label=F, ylab = "Famlia") # para obtener la curva de rarefaccion
 save(otu_rarecurve_p, file = "Plots/curva_rarefacción_pez") # para guardar la curva en la carpeta "Plots"
+
+
+# Pez limpio genero
+otu.rare= otu_table(pez_limpio_G_1) # nos referimos al otu_table de la base
+otu.rare= as.data.frame(otu.rare) # lo convertimos en data frame
+sample_names=rownames(otu.rare) # acomodamos los nombres de las filas 
+otu_rarecurve_p<- rarecurve(otu.rare, setp=10000, label=F, ylab = "Género") # para obtener la curva de rarefaccion
+save(otu_rarecurve_p, file = "Plots/curva_rarefacción_pez") # para guardar la curva en la carpeta "Plots"
+
+#Oso limpio genero
+otu.rare= otu_table(oso_limpio_G_1) # nos referimos al otu_table de la base
+otu.rare= as.data.frame(otu.rare) # lo convertimos en data frame
+sample_names=rownames(otu.rare) # acomodamos los nombres de las filas 
+otu_rarecurve_p<- rarecurve(otu.rare, setp=10000, label=F, ylab = "Género") # para obtener la curva de rarefaccion
+save(otu_rarecurve_p, file = "Plots/curva_rarefacción_pez") # para guardar la curva en la carpeta "Plots"
+
 
 # Paquetes necesarios para hacer tablas bonitas en R:
 #install.packages("gtExtras")
@@ -326,12 +342,18 @@ save(venn_genero, file="Plots/venn_genero") # se guarda en la carpeta Plots
 library(MicrobiotaProcess) # se necesita esta libreria
 par(mfrow=c(2,1)) # para obtener dos plots en una imagen
 
+# Pagina de (mucha) ayuda:
+# https://yulab-smu.top/MicrobiotaProcessWorkshop/articles/MicrobiotaProcessWorkshop.html
+
 
 # Para los osos (familia):
 
-oso1familia <- get_taxadf(obj=oso_limpio_F_1, taxlevel=7, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
+oso1familia <- get_taxadf(obj=oso_limpio_F_1, taxlevel=6, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
+  # En taxlevel se pone el nivel taxonomico, hay que cambiarlo para ver familias / generos
+  # Taxlevel de 6 es para familias
 
 # Las 30 taxonomias mas abundantes se visualizaron por default
+  # pero si queremos cambiar ese valor se agrega topn=# en la primera linea.
 plot_oso1familia <- ggbartax(obj=oso1familia) +
   xlab("nuevacol") +
   ylab("relative abundance (%)") +
@@ -343,7 +365,7 @@ plot_oso1familia # se imprime el objeto
 
 # Para los peces (familia):
 
-pez1familia <- get_taxadf(obj=pez_limpio_F_1, taxlevel=7, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
+pez1familia <- get_taxadf(obj=pez_limpio_F_1, taxlevel=6, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
 
 # Las 30 taxonomias mas abundantes se visualizaron por default
 plot_pez1familia <- ggbartax(obj=pez1familia) +

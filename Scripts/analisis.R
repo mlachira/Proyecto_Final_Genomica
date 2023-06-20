@@ -50,7 +50,7 @@ View(sample_data(base_juntas)) # se visualiza su sample_data
 # Para juntar especies con la misma taxonomia, en este caso a nivel de familia.
 taxas_juntas<- tax_glom(base_juntas, taxrank="Family", NArm=TRUE, bad_empty=c(NA, "", " ", "\t"))
 taxas_juntas # se imprime el objeto para asegurarse de que se cargo bien
-View(sample_data(taxas_juntas)) )) # se visualiza su sample_data
+View(sample_data(taxas_juntas)) # se visualiza su sample_data
 
 save(taxas_juntas, file="Data/taxas_juntas") # se guarda la base porque es muy pesada y para no tener que volver a cargarla
 load("Data/taxas_juntas") # con esto los demas integrantes pueden cargar la base sin tener que cagar el objeto desde cero.
@@ -460,43 +460,33 @@ save(core, file = "Plots/core_microbiome")
 
 
 ## Heatmaps ##
+library(phyloseq)
+matrix <- as.matrix(data.frame(otu_table(oso_limpio_F_1)))
+rownames(matrix) <- as.character(tax_table(oso_limpio_F_1)[, "Family"])
+metadata_sub <- data.frame(sample_data(oso_limpio_F_1))
+# Define the annotation color for columns and rows
+annotation_col = data.frame(
+  Subject = as.factor(metadata_sub$subject),  
+  check.names = FALSE
+)
+rownames(annotation_col) = rownames(metadata_sub)
 
-#install.packages("RColorBrewer")
-library(RColorBrewer)
-#install.packages("reshape")
-library(reshape)
+annotation_row = data.frame(
+  Family = as.factor(tax_table(oso_limpio_F_1)[, "Family"])
+)
+rownames(annotation_row) = rownames(matrix)
 
-prevalences <- seq(.05, 1, .05)
-detections <- round(10^seq(log10(0.01), log10(.2), length = 9), 3)
+# ann_color should be named vectors
+phylum_col = RColorBrewer::brewer.pal(length(levels(annotation_row$Family)), "Paired")
+names(phylum_col) = levels(annotation_row$Family)
+ann_colors = list(
+  Phylum = phylum_col
+)
 
-# Definir que la paleta de colores sea gris:
-gray <- gray(seq(0,1,length=5))
-
-#Added pseq.rel, I thin... must be checked if it was in the the rednred version,; where it is initialized
-#pseq.rel<- microbiome::transform(pseq, 'compositional')
-#min-prevalence gets the 100th highest prevalence
-#install.packages("remotes")
-#remotes::install_github("microbiome/microbiome")
-library(microbiome)
-
-p <- plot_core(pseq.rel,
-               plot.type = "heatmap", 
-               colours = gray,
-               prevalences = prevalences, 
-               detections = detections, 
-               min.prevalence = prevalence(pseq.rel, sort = TRUE)[100]) +
-  labs(x = "Detection Threshold\n(Relative Abundance (%))") +
-  
-  #Ajustar el tamano de los ejes y de las leyendas:
-  theme(axis.text.y= element_text(size=8, face="italic"),
-        axis.text.x.bottom=element_text(size=8),
-        axis.title = element_text(size=10),
-        legend.text = element_text(size=8),
-        legend.title = element_text(size=10))
-
-print(p) # se imprime el objeto
-save(p, file = "Plots//heat_map") # se guarda en Plots
-detections <- seq(from = 50, to = round(max(abundances(taxas_juntas))/10, -1), by = 100)
+ComplexHeatmap::pheatmap(matrix, scale= "row", 
+                         annotation_col = annotation_col, 
+                         annotation_row = annotation_row, 
+                         annotation_colors = ann_colors)
 
 # Otro heatmap
 

@@ -81,6 +81,7 @@ sample_oso <- function(oso_limpio_F_1, FUN = sample,...){
 
 oso_corto_F_1<- sample_oso(oso_limpio_F_1, size=30)
 oso_corto_F_1
+
 #Para osos negro (genero):
 sample_osoo_1 <- function(oso_limpio_G_1, FUN = sample,...){
   ids <- sample_names(oso_limpio_G_1)
@@ -269,6 +270,22 @@ head(df4_simpson) %>% # para simpson
   gt_theme_nytimes()
 
 
+# Graficas del indice de Simpson
+
+#Graficas con bases de datos completas
+plot_richness(pez_limpio_F_1, measures="Simpson") # Para pez (familias)
+plot_richness(oso_limpio_F_1, measures="Simpson") # Para osos (familias)
+plot_richness(pez_limpio_G_1, measures="Simpson") # Para pez (genero)
+plot_richness(oso_limpio_F_1, measures="Simpson") # Para osos (genero)
+
+#Graficas con bases de datos reducidas:
+plot_richness(pez_corto_F_1, measures="Simpson") # Para pez (familias)
+plot_richness(oso_corto_F_1, measures="Simpson") # Para osos (familias)
+plot_richness(pez_corto_G_1, measures="Simpson") # Para pez (genero)
+plot_richness(oso_corto_F_1, measures="Simpson") # Para osos (genero)
+
+
+
 ## Boxplot de la diversidad de Shannon ##
 
 p.shannon<- boxplot_alpha(taxas_juntas,
@@ -384,6 +401,9 @@ save(venn_genero, file="Plots/venn_genero") # se guarda en la carpeta Plots
 ## Graficas de abundancias relativas ##
 
 library(MicrobiotaProcess) # se necesita esta libreria
+#install.packages("wesanderson")
+library(wesanderson)
+
 par(mfrow=c(2,1)) # para obtener dos plots en una imagen
 
 # Pagina de (mucha) ayuda:
@@ -398,10 +418,10 @@ oso1familia <- get_taxadf(obj=oso_corto_F_1, taxlevel=6, type = "others") # indi
 
 # Las 30 taxonomias mas abundantes se visualizaron por default
   # pero si queremos cambiar ese valor se agrega topn=# en la primera linea.
-plot_oso1familia <- ggbartax(obj=oso1familia) +
-  xlab("nuevacol") +
-  ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+plot_oso1familia <- ggbartax(obj=oso1familia, topn=10) +
+  xlab("Muestras") +
+  ylab("Abundancia relativa (%)") +
+  scale_fill_manual(values=wes_palette(n=11, name = "Darjeeling1", type = "continuous")) +
   guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 # Arriba se indican las especificaciones para el plot, como el tamano de letra, los textos, los colores.
 plot_oso1familia # se imprime el objeto 
@@ -409,13 +429,13 @@ plot_oso1familia # se imprime el objeto
 
 # Para los peces (familia):
 
-pez1familia <- get_taxadf(obj=pez_limpio_F_1, taxlevel=6, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
+pez1familia <- get_taxadf(obj=pez_corto_F_1, taxlevel=6, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
 
 # Las 30 taxonomias mas abundantes se visualizaron por default
-plot_pez1familia <- ggbartax(obj=pez1familia) +
+plot_pez1familia <- ggbartax(obj=pez1familia, topn=10) +
   xlab("nuevacol") +
   ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  scale_fill_manual(values=wes_palette(n=11, name = "Darjeeling1", type = "continuous")) +
   guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 # Arriba se indican las especificaciones para el plot, como el tamano de letra, los textos, los colores.
 plot_pez1familia # se imprime el objeto 
@@ -423,13 +443,13 @@ plot_pez1familia # se imprime el objeto
 
 # Para los osos (genero):
 
-oso1genero <- get_taxadf(obj=oso_limpio_G_1, taxlevel=7, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
+oso1genero <- get_taxadf(obj=oso_corto_G_1, taxlevel=7, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
 
 # Las 30 taxonomias mas abundantes se visualizaron por default
-plot_oso1genero <- ggbartax(obj=oso1genero) +
+plot_oso1genero <- ggbartax(obj=oso1genero, topn=10) +
   xlab("nuevacol") +
   ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  scale_fill_manual(values=wes_palette(n=11, name = "Darjeeling1", type = "continuous")) +
   guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 # Arriba se indican las especificaciones para el plot, como el tamano de letra, los textos, los colores.
 plot_oso1genero # se imprime el objeto 
@@ -437,13 +457,13 @@ plot_oso1genero # se imprime el objeto
 
 # Para los peces (genero):
 
-pez1genero <- get_taxadf(obj=pez_limpio_G_1, taxlevel=7, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
+pez1genero <- get_taxadf(obj=pez_corto_G_1, taxlevel=7, type = "others") # indico la base que quiero y que tome en cuenta todos los niveles taxonomicos.
 
 # Las 30 taxonomias mas abundantes se visualizaron por default
-plot_pez1genero <- ggbartax(obj=pez1genero) +
+plot_pez1genero <- ggbartax(obj=pez1genero, topn=10) +
   xlab("nuevacol") +
   ylab("relative abundance (%)") +
-  scale_fill_manual(values=c(colorRampPalette(RColorBrewer::brewer.pal(12,"Set3"))(31))) +
+  scale_fill_manual(values=wes_palette(n=11, name = "Darjeeling1", type = "continuous")) +
   guides(fill= guide_legend(keywidth = 0.5, keyheight = 0.5))
 # Arriba se indican las especificaciones para el plot, como el tamano de letra, los textos, los colores.
 plot_pez1genero # se imprime el objeto 

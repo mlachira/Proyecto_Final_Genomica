@@ -3,7 +3,7 @@
     "path": "~/GitHub/Proyecto_Final_Genomica_Funcional/Scripts/analisis.R",
     "project_path": "Scripts/analisis.R",
     "type": "r_source",
-    "hash": "392441469",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1687298858448.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "544,68",
+        "cursorPosition": "544,0",
         "scrollLine": "526"
     },
     "folds": "",
-    "lastKnownWriteTime": 1687302963,
+    "lastKnownWriteTime": 1687309782,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1687302963136,
+    "last_content_update": 1687309782,
     "read_only": false,
     "read_only_alternatives": []
 }
